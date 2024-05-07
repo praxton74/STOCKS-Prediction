@@ -1,0 +1,226 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predict Price</title>
+    <style>
+        body {
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXUzNXU3a2N4cDFic3l6eDhkMHd0OTg0M2h6aW95NWk2NXU3b2hreiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JtBZm3Getg3dqxK0zP/giphy.gif'); /* Replace with your GIF URL */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px; /* Add some padding for better readability */
+        }
+
+        #container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent background color for better readability */
+            padding: 20px; /* Add some padding to the container */
+            border-radius: 10px; /* Add border-radius for rounded corners */
+        }
+
+        /* Apply custom styles to the form inputs and button */
+        input[type="text"], button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #fff;
+            background-color: transparent;
+            color: #fff;
+            outline: none;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $(document).ready(function() {
+            $('#prediction-form').submit(function(event) {
+                event.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
+
+                // Get CSRF token
+                var csrftoken = getCookie('csrftoken');
+
+                // Include CSRF token in headers
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "predict_price_api" %}',
+                    data: formData,
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    },
+                    success: function(response) {
+                        $('#result').html('<p>Predicted Price: ' + response.predicted_price + '</p>');
+                    },
+                    error: function(xhr, errmsg, err) {
+                        $('#result').html('<p>Error: ' + errmsg + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <h1>Predict Price</h1>
+        <form id="prediction-form">
+            <label for="ticker">Ticker Symbol:</label><br>
+            <input type="text" id="ticker" name="ticker"><br><br>
+            <label for="end-date">End Date (YYYY-MM-DD):</label><br>
+            <input type="text" id="end-date" name="end-date"><br><br>
+            <button type="submit">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predict Price</title>
+    <style>
+        body {
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXUzNXU3a2N4cDFic3l6eDhkMHd0OTg0M2h6aW95NWk2NXU3b2hreiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JtBZm3Getg3dqxK0zP/giphy.gif'); /* Replace with your GIF URL */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px; /* Add some padding for better readability */
+        }
+
+        #container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent background color for better readability */
+            padding: 20px; /* Add some padding to the container */
+            border-radius: 10px; /* Add border-radius for rounded corners */
+        }
+
+        /* Apply custom styles to the form inputs and button */
+        input[type="text"], button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #fff;
+            background-color: transparent;
+            color: #fff;
+            outline: none;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            border: none; /* Remove button border */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Style the output box */
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+            border-radius: 5px; /* Add border-radius for rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Add box shadow for depth */
+        }
+
+        /* Style the text inside the output box */
+        #result p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $(document).ready(function() {
+            $('#prediction-form').submit(function(event) {
+                event.preventDefault();
+                var form = $(this);
+                var formData = form.serialize();
+
+                // Get CSRF token
+                var csrftoken = getCookie('csrftoken');
+
+                // Include CSRF token in headers
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "predict_price_api" %}',
+                    data: formData,
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    },
+                    success: function(response) {
+                        $('#result').html('<p>Predicted Price: ' + response.predicted_price + '</p>');
+                    },
+                    error: function(xhr, errmsg, err) {
+                        $('#result').html('<p>Error: ' + errmsg + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <h1>Predict Price</h1>
+        <form id="prediction-form">
+            <label for="ticker">Ticker Symbol:</label><br>
+            <input type="text" id="ticker" name="ticker"><br><br>
+            <label for="end-date">End Date (YYYY-MM-DD):</label><br>
+            <input type="text" id="end-date" name="end-date"><br><br>
+            <button type="submit">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
+</body>
+</html>
